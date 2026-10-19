@@ -21,8 +21,22 @@ def api_key() -> str:
     return os.getenv("GEMINI_API_KEY", "").strip().strip("\"'")
 
 
+def models() -> list[str]:
+    """Configured Gemini models in priority order; GEMINI_MODELS accepts comma-separated values."""
+    raw = os.getenv("GEMINI_MODELS", "").strip()
+    if not raw:
+        raw = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    result = []
+    for item in raw.split(","):
+        name = item.strip().strip("\\\"'")
+        if name and name not in result:
+            result.append(name)
+    return result or ["gemini-2.5-flash"]
+
+
 def model() -> str:
-    return (os.getenv("GEMINI_MODEL") or "gemini-2.5-flash").strip().strip("\"'")
+    """Compatibility helper for health/status endpoints: return the primary model."""
+    return models()[0]
 
 
 def configured() -> bool:
@@ -30,8 +44,8 @@ def configured() -> bool:
     return bool(key) and not key.lower().startswith("replace_with")
 
 
-def api_url() -> str:
-    return f"https://generativelanguage.googleapis.com/v1beta/models/{model()}:generateContent"
+def api_url(model_name: str) -> str:
+    return f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
 
 
 RETRY_STATUS = {429, 500, 502, 503, 504}
@@ -51,38 +65,64 @@ async def call_llm(system: str, user: str, *, json_mode: bool = False, temperatu
         "generationConfig": generation_config,
     }
     response = None
-    for attempt in range(2):
-        try:
-            async with httpx.AsyncClient(timeout=24) as client:
-                response = await client.post(
-                    api_url(),
-                    headers={"x-goog-api-key": api_key(), "Content-Type": "application/json"},
-                    json=payload,
-                )
-        except (httpx.HTTPError, httpx.InvalidURL) as exc:
-            log.error("Gemini request failed (%s): %r", type(exc).__name__, exc)
-            raise AIError("Could not reach Gemini. Check the deployment network and GEMINI_MODEL.", 502)
-        if response.status_code not in RETRY_STATUS or attempt == 1:
-            break
-        log.warning("Gemini returned %s; retrying", response.status_code)
-        await asyncio.sleep(1.0)
+    data = {}
+    last_message = "Gemini request failed"
+    models_to_try = models()
+    for model_index, model_name in enumerate(models_to_try):
+        move_to_next_model = False
+        for attempt in range(2):
+            try:
+                async with httpx.AsyncClient(timeout=24) as client:
+                    response = await client.post(
+                        api_url(model_name),
+                        headers={"x-goog-api-key": api_key(), "Content-Type": "application/json"},
+                        json=payload,
+                    )
+            except (httpx.HTTPError, httpx.InvalidURL) as exc:
+                log.error("Gemini request failed (%s) for %s: %r", type(exc).__name__, model_name, exc)
+                if model_index < len(models_to_try) - 1:
+                    move_to_next_model = True
+                    break
+                raise AIError("Could not reach Gemini. Check network access and GEMINI_MODELS.", 502) from exc
 
-    try:
-        data = response.json()
-    except Exception:
-        data = {}
-    if response.status_code != 200:
-        message = ((data.get("error") or {}).get("message") if isinstance(data, dict) else None) or "Gemini request failed"
-        log.error("Gemini API error %s: %s", response.status_code, str(message)[:300])
-        if response.status_code in (401, 403):
-            raise AIError("Gemini rejected the API key. Check GEMINI_API_KEY in Vercel settings.", 502)
-        if response.status_code == 404:
-            raise AIError("Gemini model was not found. Check GEMINI_MODEL in Vercel settings.", 502)
-        if response.status_code == 429:
-            raise AIError("Gemini rate limit or quota reached. Wait a little and try again.", 429)
-        if response.status_code in (503, 504):
-            raise AIError("Gemini is temporarily busy. Please try again shortly.", 503)
-        raise AIError(str(message)[:300], 502)
+            try:
+                data = response.json()
+            except Exception:
+                data = {}
+            if response.status_code == 200:
+                break
+
+            error_obj = data.get("error") if isinstance(data, dict) else {}
+            last_message = (error_obj or {}).get("message") or "Gemini request failed"
+            log.warning("Gemini model %s returned %s: %s", model_name, response.status_code, str(last_message)[:200])
+
+            if response.status_code in (401, 403):
+                raise AIError("Gemini rejected the API key. Check GEMINI_API_KEY in Vercel settings.", 502)
+
+            if response.status_code in RETRY_STATUS and attempt == 0:
+                await asyncio.sleep(1.0)
+                continue
+
+            if response.status_code in (404, 429, 500, 502, 503, 504) and model_index < len(models_to_try) - 1:
+                move_to_next_model = True
+                break
+            if response.status_code == 429:
+                raise AIError("Gemini quota/rate limit reached for all configured models. Review quota or try later.", 429)
+            if response.status_code == 404:
+                raise AIError("Gemini model was not found. Check GEMINI_MODELS in Vercel settings.", 502)
+            if response.status_code in (503, 504):
+                raise AIError("Gemini is temporarily busy across configured models. Please try again shortly.", 503)
+            raise AIError(str(last_message)[:300], 502)
+
+        if response is not None and response.status_code == 200:
+            log.info("Gemini request succeeded with model %s", model_name)
+            break
+        if move_to_next_model:
+            log.info("Falling back from Gemini model %s", model_name)
+            continue
+
+    if response is None or response.status_code != 200:
+        raise AIError(f"All configured Gemini models failed. Last error: {str(last_message)[:200]}", 502)
 
     candidates = data.get("candidates") or []
     parts = (((candidates[0] if candidates else {}).get("content") or {}).get("parts") or [])
