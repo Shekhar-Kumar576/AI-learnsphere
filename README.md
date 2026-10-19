@@ -330,7 +330,7 @@ Here is a short explanation you can practice before your presentation.
 
 ---
 
-## 14. ❓ Questions Judges May Ask
+## 14. ❓ Questions Ask
 
 **Q1. What problem does LearnSphere AI address?**
 
