@@ -49,8 +49,11 @@ An interactive AI/ML learning workspace with a Gemini-powered Learning Assistant
 3. Vercel should detect Vite. Build command: `npm run build`; output directory: `dist`.
 4. In **Project Settings → Environment Variables**, add:
    - `GEMINI_API_KEY` = your key from Google AI Studio
-   - `GEMINI_MODEL` = `gemini-2.5-flash` (optional; a default is included)
-5. Redeploy after saving the environment variables. Check `/api/health` on your Vercel domain; it should return `ok: true` and `aiConfigured: true`.
+   - `GEMINI_MODELS` = `gemini-2.5-flash,gemini-2.0-flash` (optional; comma-separated priority list)
+   - If `GEMINI_MODELS` is absent, `GEMINI_MODEL` is still supported as a single-model setting.
+5. Redeploy after saving the environment variables.
+
+When the first model returns a quota/rate-limit response (429), is unavailable (5xx), or the model name is invalid (404), the backend tries the next configured model. Keep model names that are available to your Gemini API project. This uses the same API key; a second model does not guarantee extra quota, because quotas depend on the model and project. Invalid API-key errors (401/403) do not trigger fallback. Check `/api/health` on your Vercel domain; it should return `ok: true` and `aiConfigured: true`.
 
 **Important:** never put the Gemini key in a `VITE_` variable or frontend code. Vercel's filesystem is ephemeral. The included SQLite database uses `/tmp` in Vercel, so server-side chat/interview history may reset on cold starts. For durable cross-deployment history, connect a hosted database before relying on it for production.
 
