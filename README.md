@@ -1,78 +1,395 @@
-# LearnSphere AI
+# 🌍 LearnSphere AI
+### Learn Smarter. Understand Better. Grow Further.
 
-An interactive AI/ML learning workspace with a Gemini-powered Learning Assistant, video lessons, quizzes, resource uploads, learning history, and AI/ML mock interviews.
+**An AI-powered learning assistant designed to make learning simpler, more interactive, and accessible.**
 
-## Stack
+---
 
-- **Frontend:** React 19 + TypeScript + Vite
-- **Backend:** Python + FastAPI (Vercel Python Function)
-- **AI:** Google Gemini `generateContent` API, called only from the backend
-- **Deployment:** Vercel (static frontend + `/api/*` Python function)
+## 1. 💡 What Is LearnSphere AI?
 
-## Run locally
+LearnSphere AI is a prototype of an AI-powered learning platform that aims to help students learn and understand concepts more easily with the assistance of Artificial Intelligence.
 
-1. Install Node.js and Python 3.11+.
-2. From this project directory:
+Traditional learning often depends on textbooks, fixed explanations, and searching through multiple websites. Students may struggle when a topic is difficult to understand or when they need an explanation suited to their level.
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+LearnSphere AI explores how generative AI can make this process more interactive.
 
-3. In a second terminal, install the backend dependencies and run FastAPI:
+Instead of treating learning as a one-way process, the idea is to let students interact with an AI-powered system and receive responses to their learning requests.
 
-   ```bash
-   python -m venv .venv
-   # Windows: .venv\\Scripts\\activate
-   # macOS/Linux: source .venv/bin/activate
-   pip install -r requirements.txt
-   pip install -r backend/requirements.txt
-   ```
+**In simple words:** LearnSphere AI is like a digital learning assistant that can help explain concepts through an AI-powered interface.
 
-4. Set the Gemini key in the backend terminal before starting it:
+> **Important:** LearnSphere AI is a prototype. Its actual capabilities depend on the features implemented and connected in the current version.
 
-   ```bash
-   # Windows PowerShell
-   $env:GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-   # macOS/Linux
-   export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-   ```
+---
 
-   Then run `uvicorn backend.app.main:app --reload --port 8000`.
+## 2. 🎯 The Problem We Want to Solve
 
-   Vite proxies `/api` requests to `http://127.0.0.1:8000` during local development.
+Students can face several common learning challenges:
 
-## Deploy to Vercel
+- **Complex concepts:** Some topics are difficult to understand from a textbook alone.
+- **Information overload:** Searching multiple websites can take time.
+- **Limited interaction:** Static learning resources may not answer a student's specific question.
+- **Different learning needs:** Students may need an alternative explanation of the same topic.
 
-1. Push this project folder to a **new GitHub repository**. The project root is the folder containing `package.json` and `vercel.json`.
-2. In Vercel, choose **Add New → Project**, import the new repository, and keep the project root at the repository root.
-3. Vercel should detect Vite. Build command: `npm run build`; output directory: `dist`.
-4. In **Project Settings → Environment Variables**, add:
-   - `GEMINI_API_KEY` = your key from Google AI Studio
-   - `GEMINI_MODELS` = `gemini-2.5-flash,gemini-2.0-flash` (optional; comma-separated priority list)
-   - If `GEMINI_MODELS` is absent, `GEMINI_MODEL` is still supported as a single-model setting.
-5. Redeploy after saving the environment variables.
+### Our approach
 
-When the first model returns a quota/rate-limit response (429), is unavailable (5xx), or the model name is invalid (404), the backend tries the next configured model. Keep model names that are available to your Gemini API project. This uses the same API key; a second model does not guarantee extra quota, because quotas depend on the model and project. Invalid API-key errors (401/403) do not trigger fallback. Check `/api/health` on your Vercel domain; it should return `ok: true` and `aiConfigured: true`.
+LearnSphere AI explores an interactive, AI-assisted way of learning.
 
-**Important:** never put the Gemini key in a `VITE_` variable or frontend code. Vercel's filesystem is ephemeral. The included SQLite database uses `/tmp` in Vercel, so server-side chat/interview history may reset on cold starts. For durable cross-deployment history, connect a hosted database before relying on it for production.
+| Traditional learning challenge | LearnSphere AI approach |
+|---|---|
+| A concept is difficult to understand | Ask for an AI-generated explanation |
+| Searching takes time | Request information through one learning interface |
+| One explanation may not be enough | Ask follow-up questions where supported |
+| Learning tools may feel disconnected | Bring supported learning interactions into one platform |
 
-## Features
+The aim is not to replace teachers. It is to explore how AI can support students, teachers, and self-learners.
 
-- Learning Assistant receives the active lesson notes/transcript plus extracted text notes.
-- Four lesson tracks: supervised learning (included animated clip), neural networks, gradient descent, and backpropagation (curated full-length video embeds).
-- Mock interview question counts: **1, 3, 5, or 7**; AI/ML-focused questions, answer-by-answer feedback, and final summary.
-- Interactive practice quiz, browser-local resources and text-note extraction, history, settings, and responsive navigation.
-- Anonymous browser ID separates data between browsers; this is not a real account/login system.
+---
 
-## Tests
+## 3. 🚀 Our Proposed Solution
 
-```bash
-pip install -r requirements.txt pytest
-PYTHONPATH=backend python -m pytest backend/tests -q
-npm run build
+LearnSphere AI combines three main elements:
+
+1. **A user-friendly interface** where students interact with the application.
+2. **A backend system** that receives requests and manages application logic.
+3. **Generative AI** that can produce responses to supported learning requests.
+
+The overall idea is simple:
+
+**Student asks → Application processes → AI generates a response → Student learns from the result.**
+
+---
+
+## 4. 🏗️ System Architecture — The Big Picture
+
+You do not need to know every programming detail to understand this architecture.
+
+Think of LearnSphere AI as a team of three components, each with a different responsibility.
+
+```mermaid
+flowchart TD
+    U["👩‍🎓 Student"]
+    F["🖥️ Frontend<br/>The part the student sees"]
+    B["⚙️ Backend<br/>The application logic"]
+    AI["🧠 Google Gemini AI<br/>Generates AI responses"]
+    R["📖 Response shown to student"]
+
+    U -->|"Enters a question"| F
+    F -->|"Sends a request"| B
+    B -->|"Requests AI assistance"| AI
+    AI -->|"Returns generated content"| B
+    B -->|"Sends the result"| F
+    F --> R
 ```
 
-## API endpoints
+### Understand each component
 
-`GET /api/health` · `POST /api/chat` · `GET /api/history` · `POST /api/interview/start` · `POST /api/interview/{id}/answer` · `POST /api/interview/{id}/finish` · `GET /api/interview/sessions` · `GET /api/interview/{id}` · `GET /api/stats` · `DELETE /api/me/data`.
+**1. Frontend — The face of the application**
+
+The frontend is the part that users see and interact with: pages, buttons, input fields, layouts, and displayed results.
+
+It is built using React, TypeScript, and Vite.
+
+**2. Backend — The brain of the application logic**
+
+The backend receives requests from the frontend, performs the necessary processing, communicates with AI services when required, and sends responses back.
+
+The backend is built using Python and FastAPI.
+
+**3. Google Gemini — The generative AI engine**
+
+Gemini is the AI service connected to the backend. It can generate responses based on the request and the model's capabilities.
+
+The backend acts as the intermediary between the frontend and Gemini.
+
+**Why separate them?**
+
+Separating the interface, application logic, and AI integration makes the project easier to maintain, test, and improve.
+
+---
+
+## 5. 🔄 How Does LearnSphere AI Work?
+
+Imagine a student wants to understand the concept of machine learning.
+
+```mermaid
+sequenceDiagram
+    actor Student
+    participant UI as LearnSphere Interface
+    participant Server as Python Backend
+    participant Gemini as Gemini AI
+
+    Student->>UI: Requests an explanation
+    UI->>Server: Sends the request
+    Server->>Gemini: Sends the AI prompt
+    Gemini-->>Server: Generates a response
+    Server-->>UI: Returns the response
+    UI-->>Student: Displays the result
+```
+
+### Step-by-step explanation
+
+1. The student interacts with LearnSphere AI.
+2. The frontend collects the student's input.
+3. The frontend sends a request to the backend.
+4. The backend processes the request and calls Gemini when the feature requires it.
+5. Gemini generates a response.
+6. The backend returns the response to the frontend.
+7. The student sees the result in the application.
+
+This is a typical AI request flow. Not every action in the application necessarily requires a Gemini API call.
+
+---
+
+## 6. 🧰 Technology Stack — Explained in Simple English
+
+A technology stack is simply the collection of tools used to build and run an application.
+
+You can explain our main technologies like this:
+
+| Technology | Simple meaning | Why it is used |
+|---|---|---|
+| React | A tool for building user interfaces | Creates interactive screens and reusable components |
+| TypeScript | JavaScript with additional type checking | Helps developers catch certain coding mistakes |
+| Vite | A frontend development and build tool | Helps run and package the frontend |
+| Python | A programming language | Implements backend application logic |
+| FastAPI | A Python framework for APIs | Receives requests and sends structured responses |
+| Google Gemini | A generative AI service | Generates responses to supported prompts |
+| Vercel | A cloud deployment platform | Publishes the application and routes requests |
+| GitHub | A code hosting and collaboration platform | Stores the source code and tracks changes |
+
+### How these technologies work together
+
+```mermaid
+flowchart LR
+    R["React + TypeScript"]
+    V["Vite"]
+    P["Python + FastAPI"]
+    G["Google Gemini"]
+    D["Vercel Deployment"]
+
+    R --> V
+    V --> D
+    D --> P
+    P --> G
+```
+
+This diagram shows the main roles, not every build-time or runtime dependency.
+
+---
+
+## 7. 🌐 How Does the Frontend Communicate With the Backend?
+
+The frontend and backend are separate parts of the application, so they need a way to exchange information.
+
+They communicate through an **API**.
+
+An API is a set of rules that allows two software components to communicate.
+
+For example, the frontend might send a request to an endpoint such as `/api/...`. The backend receives that request and returns a response, often in JSON format.
+
+```mermaid
+flowchart LR
+    A["Frontend"]
+    B["HTTP Request"]
+    C["Backend API"]
+    D["JSON Response"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> A
+```
+
+In the deployed prototype, Vercel routes API requests to the backend service and other application requests to the frontend service, according to the deployment configuration.
+
+**Why is this useful?** The user interface does not need to contain the AI provider's secret API key. The backend can keep that key in server-side configuration.
+
+---
+
+## 8. ☁️ How Is LearnSphere AI Deployed?
+
+Deployment means making an application available beyond a developer's own computer.
+
+LearnSphere AI is configured for a frontend service and a backend service on Vercel.
+
+```mermaid
+flowchart TD
+    GH["GitHub<br/>Stores project code"]
+    V["Vercel<br/>Builds and hosts the project"]
+    FE["Frontend Service"]
+    BE["Backend Service"]
+    GEM["Gemini API"]
+
+    GH --> V
+    V --> FE
+    V --> BE
+    FE -->|"API request"| BE
+    BE --> GEM
+    GEM --> BE
+    BE --> FE
+```
+
+### Deployment in simple words
+
+- **GitHub** stores the project's source code.
+- **Vercel** builds and hosts the configured services.
+- **Frontend service** delivers the user interface.
+- **Backend service** processes API requests.
+- **Gemini API** provides AI-generated responses when requested.
+
+This setup separates the public-facing interface from server-side processing.
+
+---
+
+## 9. 🔐 How Do We Protect the AI API Key?
+
+AI providers commonly require an API key to authorize requests.
+
+LearnSphere AI should keep its Gemini API key on the backend, stored as an environment variable.
+
+An environment variable is a configuration value supplied to the application at runtime rather than written directly into source code.
+
+```text
+Student
+   │
+   ▼
+Frontend
+   │
+   ▼
+Backend ───────► Gemini API
+   │                 ▲
+   └── Uses a securely configured API key
+```
+
+The key should not be placed in public frontend code or committed to GitHub.
+
+This reduces the risk of exposing credentials, although proper access controls, request validation, and usage limits are also important.
+
+---
+
+## 10. 🌱 What Makes This Project Valuable?
+
+LearnSphere AI explores several useful ideas:
+
+- **Interactive learning:** Students can engage with an AI-powered interface.
+- **Accessible explanations:** Generative AI can provide alternative ways of explaining a topic.
+- **Modular architecture:** Frontend and backend responsibilities are separated.
+- **AI integration:** The project connects a real application backend to a generative AI service.
+- **Room to grow:** The architecture can be extended with additional learning features.
+
+The project demonstrates how an AI service can be integrated into a web application rather than being used only through a standalone chat interface.
+
+---
+
+## 11. 🔭 Future Scope
+
+The following are possible future enhancements, not claims that they are all currently implemented:
+
+- Personalized learning paths based on student goals.
+- Quizzes and practice questions with feedback.
+- Learning progress tracking.
+- Summaries of study materials.
+- Support for uploaded learning documents.
+- Additional AI providers and model fallback.
+- Accessibility improvements and multilingual explanations.
+- More comprehensive evaluation of AI response quality.
+
+These features could be prioritized according to user feedback and project requirements.
+
+---
+
+## 12. ⚖️ Limitations and Responsible AI
+
+Generative AI can produce incorrect, incomplete, or misleading information. Therefore:
+
+- Students should verify important information.
+- AI-generated answers should not be treated as guaranteed facts.
+- API availability and usage limits can affect the experience.
+- Personal information should not be entered unnecessarily.
+- Educational use should encourage understanding rather than simply copying answers.
+
+LearnSphere AI should be viewed as a learning aid, not a replacement for teachers, textbooks, or independent thinking.
+
+---
+
+## 13. 🧑‍⚖️ How to Explain This Project to Judges
+
+Here is a short explanation you can practice before your presentation.
+
+> "LearnSphere AI is our prototype for an AI-powered learning platform. The problem we are exploring is that students sometimes struggle to understand complex topics and need a more interactive way to learn.
+>
+> Our application combines a frontend built with React and TypeScript, a Python backend using FastAPI, and Google's Gemini AI for supported AI-powered tasks.
+>
+> When a student makes a request, the frontend sends it to our backend. The backend processes the request and communicates with Gemini when needed. The generated response is then returned to the frontend and presented to the student.
+>
+> We have separated the frontend and backend so that the application is easier to maintain and extend. The prototype is configured for deployment on Vercel, and the Gemini API key is intended to remain on the server side.
+>
+> Our goal is to explore how generative AI can make learning more interactive, with future opportunities for personalization, practice, and progress tracking."
+
+**Presentation tip:** Demonstrate an actual working feature while explaining the flow. Only claim functionality you can show working in the current prototype.
+
+---
+
+## 14. ❓ Questions Judges May Ask
+
+**Q1. What problem does LearnSphere AI address?**
+
+It explores how an AI-powered interface can help students get interactive explanations and support for learning requests.
+
+**Q2. Why did you use AI?**
+
+Generative AI can produce contextual responses to user prompts, making it suitable for exploring interactive learning experiences.
+
+**Q3. Why React for the frontend?**
+
+React supports reusable interface components, which helps organize and maintain interactive web applications.
+
+**Q4. Why FastAPI for the backend?**
+
+FastAPI is a Python framework for creating APIs. It lets the application receive requests, process data, and return structured responses.
+
+**Q5. What is the role of Gemini?**
+
+Gemini is the generative AI service. The backend sends supported prompts to it and receives generated content.
+
+**Q6. Why not call Gemini directly from the frontend?**
+
+Keeping the API key on the backend avoids exposing the secret in browser code and gives the application a central place to validate and manage requests.
+
+**Q7. What happens if Gemini is unavailable?**
+
+The request may fail or time out. Appropriate error handling and fallback mechanisms can improve reliability, but they should only be claimed as implemented after testing them.
+
+**Q8. What is the difference between frontend and backend?**
+
+The frontend is what the user sees and interacts with. The backend handles server-side logic, API requests, and communication with external services.
+
+**Q9. Is LearnSphere AI a finished product?**
+
+It is a prototype intended to demonstrate an AI-assisted learning concept. Its current capabilities should be judged by the features actually implemented and demonstrated.
+
+**Q10. What would you improve next?**
+
+I would prioritize reliable AI responses, better error handling, learning personalization, quizzes, progress tracking, and evaluation of educational accuracy.
+
+---
+
+## 15. 🏁 Conclusion
+
+LearnSphere AI demonstrates a practical way to connect a modern web interface, a backend API, and a generative AI service.
+
+Its central idea is simple: make AI-assisted learning more accessible through a familiar web application, while keeping the system modular enough to improve over time.
+
+**LearnSphere AI — Making learning more interactive, one concept at a time.**
+
+---
+
+### Project Information
+
+- **Project:** LearnSphere AI
+- **Category:** AI / EdTech prototype
+- **Frontend:** React, TypeScript, Vite
+- **Backend:** Python, FastAPI
+- **AI Service:** Google Gemini
+- **Deployment:** Vercel Services
+- **Source Code:** [Add your GitHub repository URL]
