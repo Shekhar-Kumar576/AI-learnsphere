@@ -65,6 +65,10 @@ You do not need to know every programming detail to understand this architecture
 
 Think of LearnSphere AI as a team of three components, each with a different responsibility.
 
+## Architecture location
+
+![LearnSphere AI architecture](docs/learnsphere-architecture.svg)
+
 ```mermaid
 flowchart TD
     U["👩‍🎓 Student"]
