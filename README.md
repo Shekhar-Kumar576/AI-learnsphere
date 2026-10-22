@@ -84,7 +84,13 @@ flowchart TD
     B -->|"Sends the result"| F
     F --> R
 ```
+## Sample data
 
+- [Lesson and quiz dataset](LearnSphere/data/sample/learnsphere-sample-dataset.json)
+- [House-prices CSV](LearnSphere/data/sample/sample-house-prices.csv)
+- [Sample SQLite database](LearnSphere/data/sample/learnsphere-sample.db)
+- [Sample data notes](LearnSphere/data/sample/README-sample-data.md)
+  
 ### Understand each component
 
 **1. Frontend — The face of the application**
