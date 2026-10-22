@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">LearnSphere AI — Prototype Architecture</title>
+  <desc id="desc">Architecture view of the LearnSphere browser app, Vercel hosted React frontend and FastAPI backend, Gemini API integration, browser local storage, and SQLite persistence.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7f8ff"/><stop offset="1" stop-color="#eef3ff"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b56e8"/><stop offset="1" stop-color="#3284e8"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#25315f" flood-opacity=".10"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#627198"/></marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#5866df"/></marker>
+    <style>
+      text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#17213e}.title{font-size:38px;font-weight:760;letter-spacing:-.7px}.subtitle{font-size:17px;fill:#697795}.lane{font-size:13px;font-weight:750;letter-spacing:1.6px;fill:#73809c}.card{fill:#fff;stroke:#dfe5f2;stroke-width:1.5;rx:18;filter:url(#shadow)}.cardTitle{font-size:20px;font-weight:740}.body{font-size:14px;fill:#5f6d8a}.small{font-size:12px;fill:#687692}.chip{font-size:11px;font-weight:700;fill:#4d58c7}.label{font-size:12px;font-weight:700;fill:#576586}.line{fill:none;stroke:#7180a2;stroke-width:2.4;marker-end:url(#arrow)}.blueLine{fill:none;stroke:#5969dd;stroke-width:2.8;marker-end:url(#arrowBlue)}.dashed{stroke-dasharray:7 6}
+    </style>
+  </defs>
+  <rect width="1600" height="980" fill="url(#bg)"/>
+  <circle cx="1470" cy="90" r="150" fill="#dfe8ff" opacity=".5"/><circle cx="90" cy="900" r="170" fill="#e5e4ff" opacity=".45"/>
+  <text x="80" y="82" class="title">LearnSphere AI</text>
+  <text x="80" y="116" class="subtitle">Prototype architecture · browser learning workspace, AI services, and activity storage</text>
+  <rect x="1290" y="54" width="230" height="38" rx="19" fill="#e6eaff"/><text x="1405" y="78" text-anchor="middle" class="chip">SOURCE-ALIGNED OVERVIEW</text>
+
+  <text x="85" y="185" class="lane">USER EXPERIENCE</text>
+  <text x="480" y="185" class="lane">HOSTING &amp; API</text>
+  <text x="1055" y="185" class="lane">INTEGRATIONS &amp; DATA</text>
+  <rect x="65" y="205" width="335" height="555" rx="24" fill="#f0f2ff" stroke="#e1e5fa"/>
+  <rect x="440" y="205" width="545" height="555" rx="24" fill="#eff7ff" stroke="#dceafa"/>
+  <rect x="1025" y="205" width="510" height="555" rx="24" fill="#f1f8f5" stroke="#dceee5"/>
+
+  <rect x="100" y="250" width="265" height="185" class="card"/>
+  <circle cx="135" cy="289" r="18" fill="#e8eaff"/><path d="M128 289h14m-7-7v14" stroke="#555fe0" stroke-width="2.2" stroke-linecap="round"/>
+  <text x="165" y="295" class="cardTitle">Learner browser</text>
+  <text x="125" y="334" class="body">React 19 · TypeScript · Vite</text>
+  <text x="125" y="361" class="body">Lessons · quizzes · tutor chat</text>
+  <text x="125" y="388" class="body">Mock interviews · progress view</text>
+  <rect x="125" y="402" width="125" height="20" rx="10" fill="#edf0ff"/><text x="187" y="416" text-anchor="middle" class="chip">SPA interface</text>
+
+  <rect x="100" y="480" width="265" height="135" class="card"/>
+  <text x="125" y="516" class="cardTitle">Browser storage</text>
+  <text x="125" y="545" class="body">localStorage</text>
+  <text x="125" y="569" class="small">Anonymous user ID, UI preferences,</text>
+  <text x="125" y="589" class="small">sample / activity display state</text>
+
+  <rect x="480" y="250" width="465" height="115" rx="18" fill="url(#brand)" filter="url(#shadow)"/>
+  <text x="515" y="291" font-size="13" font-weight="750" fill="#dce7ff" letter-spacing="1">VERCEL DEPLOYMENT</text>
+  <text x="515" y="323" font-size="22" font-weight="760" fill="#fff">Static frontend + API routing</text>
+  <text x="515" y="348" font-size="13" fill="#edf2ff">Configured as Vite frontend and FastAPI backend services</text>
+
+  <rect x="480" y="410" width="465" height="215" class="card"/>
+  <rect x="505" y="433" width="82" height="22" rx="11" fill="#e9efff"/><text x="546" y="448" text-anchor="middle" class="chip">FASTAPI</text>
+  <text x="505" y="490" class="cardTitle">LearnSphere API</text>
+  <text x="505" y="521" class="body">/api/chat · /api/history · /api/stats</text>
+  <text x="505" y="548" class="body">/api/interview/* · /api/me/data</text>
+  <text x="505" y="584" class="small">Identity via X-User-Id · input validation · AI rate limit</text>
+  <text x="505" y="606" class="small">Gemini key is read server-side from environment</text>
+
+  <rect x="1070" y="280" width="405" height="150" class="card"/>
+  <circle cx="1112" cy="322" r="20" fill="#e5f5eb"/><text x="1112" y="328" text-anchor="middle" font-size="15" font-weight="800" fill="#278653">AI</text>
+  <text x="1150" y="328" class="cardTitle">Google Gemini API</text>
+  <text x="1100" y="367" class="body">Tutor answers · interview questions</text>
+  <text x="1100" y="393" class="body">Answer feedback · session summaries</text>
+  <text x="1100" y="416" class="small">HTTPS requests from backend; model list configurable</text>
+
+  <rect x="1070" y="500" width="405" height="150" class="card"/>
+  <circle cx="1112" cy="542" r="20" fill="#fff1df"/><path d="M1104 536h16v13h-16zM1108 532h8" fill="none" stroke="#ce7b1e" stroke-width="2"/>
+  <text x="1150" y="548" class="cardTitle">SQLite database</text>
+  <text x="1100" y="586" class="body">chat_history · interview_sessions</text>
+  <text x="1100" y="612" class="body">interview_answers</text>
+  <text x="1100" y="636" class="small">Vercel path defaults to /tmp; storage is ephemeral</text>
+
+  <path d="M365 315H480" class="blueLine"/><text x="422" y="300" text-anchor="middle" class="label">HTTPS / SPA</text>
+  <path d="M480 341H365" class="line"/><text x="422" y="362" text-anchor="middle" class="label">HTML, JS, CSS</text>
+  <path d="M365 544C418 544 420 520 480 520" class="blueLine"/><text x="421" y="508" text-anchor="middle" class="label">/api/* + X-User-Id</text>
+  <path d="M945 470C1000 470 1003 355 1070 355" class="blueLine dashed"/><text x="1003" y="393" text-anchor="middle" class="label">HTTPS · Gemini</text>
+  <path d="M1070 397C1009 397 1011 492 945 492" class="line dashed"/><text x="1005" y="450" text-anchor="middle" class="label">AI response</text>
+  <path d="M945 570H1070" class="blueLine"/><text x="1007" y="555" text-anchor="middle" class="label">SQL read / write</text>
+
+  <rect x="80" y="800" width="1440" height="110" rx="20" fill="#fff" stroke="#dfe5f2" filter="url(#shadow)"/>
+  <text x="110" y="840" font-size="14" font-weight="760" fill="#4d58c7">KEY REQUEST FLOW</text>
+  <text x="110" y="875" font-size="16" font-weight="650">Learner action</text><text x="260" y="875" font-size="19" fill="#8592b0">→</text>
+  <text x="290" y="875" font-size="16" font-weight="650">React app sends /api request</text><text x="560" y="875" font-size="19" fill="#8592b0">→</text>
+  <text x="590" y="875" font-size="16" font-weight="650">FastAPI validates and runs workflow</text><text x="950" y="875" font-size="19" fill="#8592b0">→</text>
+  <text x="980" y="875" font-size="16" font-weight="650">Gemini when needed; SQLite saves activity</text>
+  <text x="80" y="947" font-size="12" fill="#75819c">Deployment note: the archive contains two Vercel configs with different rewrite rules. Confirm the selected project root routes /api/* to FastAPI and other paths to the Vite app.</text>
+</svg>
